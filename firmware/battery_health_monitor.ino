@@ -76,6 +76,9 @@ void setup() {
   }
 
   tempSensor.begin();
+  // Start DS18B20 conversion without blocking the main loop.
+  tempSensor.setWaitForConversion(false);
+  tempSensor.requestTemperatures();
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
     Serial.println(F("ERROR: OLED not detected. Check address/wiring."));
@@ -101,11 +104,13 @@ void loop() {
   const float current_mA = ina219.getCurrent_mA();
   const float power_mW = ina219.getPower_mW();
 
-  tempSensor.requestTemperatures();
+  // Read the conversion started during the previous cycle, then start
+  // the next conversion. This avoids waiting for DS18B20 conversion time.
   const float temperatureC = tempSensor.getTempCByIndex(0);
   const bool tempValid =
       (temperatureC != DEVICE_DISCONNECTED_C && temperatureC > -55.0f &&
        temperatureC < 125.0f);
+  tempSensor.requestTemperatures();
 
   showStatus(busVoltage, current_mA, temperatureC, tempValid);
 

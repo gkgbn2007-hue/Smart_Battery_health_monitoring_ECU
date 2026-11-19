@@ -27,5 +27,9 @@ jobs:
           arduino-cli lib install "DallasTemperature"
           arduino-cli lib install "Adafruit GFX Library"
           arduino-cli lib install "Adafruit SSD1306"
+      - name: Prepare Arduino sketch folder
+        run: |
+          mkdir -p /tmp/BatteryHealthMonitor
+          cp firmware/battery_health_monitor.ino /tmp/BatteryHealthMonitor/BatteryHealthMonitor.ino
       - name: Compile for Arduino Mega 2560
-        run: arduino-cli compile --fqbn arduino:avr:mega:cpu=atmega2560 firmware/battery_health_monitor.ino
+        run: arduino-cli compile --fqbn arduino:avr:mega:cpu=atmega2560 /tmp/BatteryHealthMonitor
